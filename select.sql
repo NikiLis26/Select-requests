@@ -5,7 +5,12 @@ LIMIT 1;
 
 SELECT name
 FROM tracks
-WHERE length >= '3:30';
+WHERE length = (
+    SELECT MAX(length)
+    FROM tracks
+    WHERE length >= '3:30'
+);
+
 
 SELECT name
 FROM collections
@@ -30,22 +35,11 @@ GROUP BY
   albums.name;
 
 
-SELECT DISTINCT
-  collections.name AS 'Collection Name'
-FROM
-  collections
-JOIN
-  collection_track ON collections.id = collection_track.collection_id
-JOIN
-  tracks ON collection_track.track_id = tracks.id
-JOIN
-  albums ON tracks.album_id = albums.id
-JOIN
-  artist_album ON albums.id = artist_album.album_id
-JOIN
-  artists ON artist_album.artist_id = artists.id
-WHERE
-  artists
+SELECT COUNT(*) AS track_count
+FROM tracks
+JOIN albums ON tracks.album_id = albums.id
+WHERE albums.release_year BETWEEN 2019 AND 2020;
+
 
 
 
@@ -62,3 +56,12 @@ WHERE album_id IN (
   FROM albums
   WHERE release_year BETWEEN 2019 AND 2020
 );
+
+SELECT collections.name
+FROM collections
+JOIN collection_track ON collections.id = collection_track.collection_id
+JOIN tracks ON collection_track.track_id = tracks.id
+JOIN albums ON tracks.album_id = albums.id
+JOIN artist_album ON albums.id = artist_album.album_id
+JOIN artists ON artist_album.artist_id = artists.id
+WHERE artists.name = 'Queen';
